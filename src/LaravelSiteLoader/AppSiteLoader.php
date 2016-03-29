@@ -21,7 +21,7 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
     static public function canBeUsed() {
         return (
             !empty($_SERVER['REQUEST_URI'])
-            && starts_with($_SERVER['REQUEST_URI'], self::getBaseUrl())
+            && starts_with($_SERVER['REQUEST_URI'], static::getBaseUrl())
         );
     }
 
