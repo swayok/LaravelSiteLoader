@@ -1,0 +1,35 @@
+{
+    "name": "swayok/LaravelSiteLoader",
+    "type": "library",
+    "description": "Classes to separate several different parts (sites) of a single project (i.e. admin and frontend)",
+    "keywords": [
+        "php",
+        "laravel",
+        "service provider"
+    ],
+    "authors": [
+        {
+            "name": "Alexander Filippov"
+        }
+    ],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/swayok/LaravelSiteLoader/issues"
+    },
+    "autoload": {
+        "psr-0": {
+            "LaravelSiteLoader": "/src"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/swayok/utils.git"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "laravel/framework": "5.2.*",
+        "swayok/utils": "master@dev"
+    }
+}
