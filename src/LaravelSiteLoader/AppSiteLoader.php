@@ -54,4 +54,33 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
         \App::setLocale($locale ?: static::getDefaultLocale());
     }
 
+    /**
+     * Configure session for current site
+     * @param string $connection - connection name
+     * @param int $lifetime - session lifetime in minutes
+     */
+    public function configureSession($connection, $lifetime = 720) {
+        $config = $this->getAppConfig()->get('session', ['table' => 'sessions', 'cookie' => 'session', 'driver' => 'file']);
+        if ($config['driver'] === 'array' && env('SESSION_DRIVER') === null) {
+            // fix for cached config.php created by "php artisan config:cache" command
+            $possibleDriver = $this->getAppConfig()->get('env.SESSION_DRIVER');
+            if ($possibleDriver) {
+                $config['driver'] = $possibleDriver;
+            } else {
+                // well... life is pain
+                $pathToFile = base_path('.env');
+                if (file_exists($pathToFile) && preg_match('%^SESSION_DRIVER=(.+)$%m', file_get_contents($pathToFile), $matches)) {
+                    $config['driver'] = trim(trim($matches[1]), '\'"');
+                }
+            }
+        }
+        $this->getAppConfig()->set('session', array_merge($config, [
+            'table' => $config['table'] . '_' . $connection,
+            'cookie' => $config['cookie'] . '_' . $connection,
+            'lifetime' => $lifetime,
+            'connection' => $connection,
+            'path' => static::getBaseUrl()
+        ]));
+    }
+
 }
