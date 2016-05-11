@@ -74,13 +74,26 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
                 }
             }
         }
-        $this->getAppConfig()->set('session', array_merge($config, [
-            'table' => $config['table'] . '_' . $connection,
-            'cookie' => $config['cookie'] . '_' . $connection,
+        $this->getAppConfig()->set('session', array_merge(
+            $config,
+            $this->getSessionConfig($config, $connection, $lifetime)
+        ));
+    }
+
+    /**
+     * @param array $originalConfig
+     * @param string $connection - connection name
+     * @param int $lifetime - session lifetime in minutes
+     * @return array
+     */
+    protected function getSessionConfig(array $originalConfig, $connection, $lifetime) {
+        return [
+            'table' => $originalConfig['table'] . '_' . $connection,
+            'cookie' => $originalConfig['cookie'] . '_' . $connection,
             'lifetime' => $lifetime,
             'connection' => $connection,
-            'path' => static::getBaseUrl()
-        ]));
+            'path' => static::getBaseUrl(),
+        ];
     }
 
 }
