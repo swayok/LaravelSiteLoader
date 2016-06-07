@@ -9,10 +9,16 @@ use Illuminate\Support\ServiceProvider;
 abstract class AppSitesServiceProvider extends ServiceProvider {
 
     /**
-     * Default service provider class name. Used when other providers does not match conditions
+     * Default site loader class name. Used when other site loaders does not match conditions
      * @var string
      */
     protected $defaultSectionLoaderClass;
+    /**
+     * Console site loader class name. Used when other site loaders does not match conditions and console
+     * usage is detected (artisan, queue, schedule, etc.)
+     * @var string
+     */
+    protected $consoleSectionLoaderClass = null;
     /**
      * List of full class names that implement AppSiteLoaderInterface and extend AppSiteLoader
      * Note: no need to add $defaultSection here
@@ -39,7 +45,11 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
             }
         }
         if (empty(static::$siteLoader)) {
-            $className = $this->defaultSectionLoaderClass;
+            if ($this->consoleSectionLoaderClass !== null && \App::runningInConsole()) {
+                $className = $this->consoleSectionLoaderClass;
+            } else {
+                $className = $this->defaultSectionLoaderClass;
+            }
             static::$siteLoader = new $className($this, $app);
         }
         parent::__construct($app);
