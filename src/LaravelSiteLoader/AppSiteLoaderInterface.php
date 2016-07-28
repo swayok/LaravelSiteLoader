@@ -13,10 +13,17 @@ interface AppSiteLoaderInterface {
     static public function getBaseUrl();
 
     /**
-     * Get default locale code (RU, EN, FR, etc)
+     * Get default locale code (ru, en, fr, etc)
      * @return string
      */
     static public function getDefaultLocale();
+
+    /**
+     * Get list of allowed locales.
+     * Example: ['en', 'ru', 'fr']
+     * @return array
+     */
+    static public function getAllowedLocales();
 
     /**
      * Same as ServiceProvider->register()

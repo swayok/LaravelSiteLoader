@@ -45,13 +45,22 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
     }
 
     /**
-     * Sets the locale if it exists in the session and also exists in the locales option
+     * Sets the locale if it exists in the session or uses preferred or default locale
      *
      * @return void
      */
     static public function setLocale() {
-        $locale = session()->get(get_called_class() . '_locale');
-        \App::setLocale($locale ?: static::getDefaultLocale());
+        \Request::setDefaultLocale(static::getDefaultLocale());
+        $sessionKey = static::getLocaleSessionKey();
+        $preferredLocale = \Request::getPreferredLanguage(static::getAllowedLocales());
+        \App::setLocale($sessionKey ? \Session::get($sessionKey, $preferredLocale) : $preferredLocale);
+    }
+
+    /**
+     * @return string|null - null: do not use session to set app's locale
+     */
+    static public function getLocaleSessionKey() {
+        return get_called_class() . '_locale';
     }
 
     /**
