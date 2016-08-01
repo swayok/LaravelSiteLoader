@@ -49,8 +49,12 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
      *
      * @return void
      */
-    static public function setLocale() {
-        \Request::setDefaultLocale(static::getDefaultLocale());
+    public function configureLocale() {
+        $defaultLocale = static::getDefaultLocale();
+        // set fallback locale
+        \App('translator')->setFallback($defaultLocale);
+        // set main locale
+        \Request::setDefaultLocale($defaultLocale);
         $sessionKey = static::getLocaleSessionKey();
         $preferredLocale = \Request::getPreferredLanguage(static::getAllowedLocales());
         \App::setLocale($sessionKey ? \Session::get($sessionKey, $preferredLocale) : $preferredLocale);
