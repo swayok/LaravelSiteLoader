@@ -24,7 +24,7 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
      * Note: no need to add $defaultSection here
      * @var array
      */
-    protected $sectionLoaderClasses = [];
+    protected $additionalSectionLoaderClasses = [];
 
     /**
      * Service provider object that matched required conditions
@@ -38,13 +38,13 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
     public function __construct($app) {
         // detect site section and make its service provider and import
         /** @var AppSiteLoaderInterface|AppSiteLoader $className */
-        foreach ($this->sectionLoaderClasses as $className) {
+        foreach ($this->additionalSectionLoaderClasses as $className) {
             if ($className::canBeUsed()) {
                 static::$siteLoader = new $className($this, $app);
                 break;
             }
         }
-        if (empty(static::$siteLoader)) {
+        if (static::$siteLoader === null) {
             if ($this->consoleSectionLoaderClass !== null && \App::runningInConsole()) {
                 $className = $this->consoleSectionLoaderClass;
             } else {
@@ -58,6 +58,14 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
     public function boot() {
         if (method_exists(self::$siteLoader, 'boot')) {
             static::$siteLoader->boot();
+        }
+        /** @var AppSiteLoader $className */
+        foreach ($this->additionalSectionLoaderClasses as $className) {
+            $className::configurePublishes($this);
+        }
+        if (!in_array($this->defaultSectionLoaderClass, $this->additionalSectionLoaderClasses, true)) {
+            $className = $this->defaultSectionLoaderClass;
+            $className::configurePublishes($this);
         }
     }
 

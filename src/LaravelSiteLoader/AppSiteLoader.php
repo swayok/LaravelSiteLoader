@@ -109,4 +109,8 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
         ];
     }
 
+    static public function configurePublishes(AppSitesServiceProvider $provider) {
+
+    }
+
 }

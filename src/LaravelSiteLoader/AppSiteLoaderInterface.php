@@ -43,4 +43,10 @@ interface AppSiteLoaderInterface {
      */
     public function provides();
 
+    /**
+     * Resources publishing
+     * @param AppSitesServiceProvider $provider
+     */
+    static public function configurePublishes(AppSitesServiceProvider $provider);
+
 }
