@@ -49,4 +49,13 @@ interface AppSiteLoaderInterface {
      */
     static public function configurePublishes(AppSitesServiceProvider $provider);
 
+    /**
+     * @return array - [
+     *      'prefix' => 'section', //< optional
+     *      'files' => ['route_file_path.php', '...'],
+     *      'namespace' => '/App/Section/Http/Controller'] //< optional
+     * ]
+     */
+    static public function loadRoutes();
+
 }

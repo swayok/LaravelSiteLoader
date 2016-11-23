@@ -113,4 +113,19 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
 
     }
 
+    static public function loadRoutes() {
+        /**
+        \Route::group(
+            [
+                'prefix' => 'section',
+                'namespace' => '\App\Section\Http\Controllers',
+                'middleware' => ['web'],
+            ],
+            function () {
+                include base_path('routes/section.php');
+            }
+        );
+        */
+    }
+
 }
