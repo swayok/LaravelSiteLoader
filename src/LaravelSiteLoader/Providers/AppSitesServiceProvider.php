@@ -61,12 +61,10 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
         }
         /** @var AppSiteLoader $className */
         foreach ($this->additionalSectionLoaderClasses as $className) {
-            $className::configurePublishes($this);
             $className::loadRoutes();
         }
         if (!in_array($this->defaultSectionLoaderClass, $this->additionalSectionLoaderClasses, true)) {
             $className = $this->defaultSectionLoaderClass;
-            $className::configurePublishes($this);
             $className::loadRoutes();
         }
     }
@@ -91,11 +89,6 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
     public function loadViewsFrom($path, $namespace) {
         // just make public access
         parent::loadViewsFrom($path, $namespace);
-    }
-
-    public function publishes(array $paths, $group = null) {
-        // just make public access
-        parent::publishes($paths, $group);
     }
 
 }
