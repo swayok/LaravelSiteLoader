@@ -63,8 +63,9 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
         foreach ($this->additionalSectionLoaderClasses as $className) {
             $className::loadRoutes();
         }
+        $className = $this->defaultSectionLoaderClass;
+        $className::configureDefaults();
         if (!in_array($this->defaultSectionLoaderClass, $this->additionalSectionLoaderClasses, true)) {
-            $className = $this->defaultSectionLoaderClass;
             $className::loadRoutes();
         }
     }

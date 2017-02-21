@@ -124,4 +124,11 @@ abstract class AppSiteLoader implements AppSiteLoaderInterface {
         */
     }
 
+    /**
+     * Used to configure some defaults
+     */
+    static public function configureDefaults() {
+
+    }
+
 }

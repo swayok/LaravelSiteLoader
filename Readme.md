@@ -56,7 +56,7 @@ For frontend:
         
 For admin:
     
-    namespace App\Admin;
+    namespace PeskyCMF\CMS\CmsAdmin;
     
     use LaravelSiteLoader\AppSiteLoader;
 
@@ -148,7 +148,7 @@ Personally I use `AppServiceProvider` for this:
     
     use LaravelSiteLoader\Providers\AppSitesServiceProvider;
     use App\Frontend\FrontendSiteLoader;
-    use App\Admin\AdminSiteLoader;
+    use App\CmsAdmin\AdminSiteLoader;
     
     class AppServiceProvider extends AppSitesServiceProvider {
         protected $defaultSectionLoaderClass = FrontendSiteLoader::class;
