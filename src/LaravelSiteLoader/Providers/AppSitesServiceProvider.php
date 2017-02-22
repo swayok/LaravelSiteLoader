@@ -56,9 +56,6 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
     }
 
     public function boot() {
-        if (method_exists(self::$siteLoader, 'boot')) {
-            static::$siteLoader->boot();
-        }
         /** @var AppSiteLoader $className */
         foreach ($this->additionalSectionLoaderClasses as $className) {
             $className::loadRoutes();
@@ -67,6 +64,9 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
         $className::configureDefaults();
         if (!in_array($this->defaultSectionLoaderClass, $this->additionalSectionLoaderClasses, true)) {
             $className::loadRoutes();
+        }
+        if (method_exists(self::$siteLoader, 'boot')) {
+            static::$siteLoader->boot();
         }
     }
 
