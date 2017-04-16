@@ -5,6 +5,7 @@ namespace LaravelSiteLoader\Providers;
 use LaravelSiteLoader\AppSiteLoader;
 use LaravelSiteLoader\AppSiteLoaderInterface;
 use Illuminate\Support\ServiceProvider;
+use LaravelSiteLoader\DummySiteLoader;
 
 abstract class AppSitesServiceProvider extends ServiceProvider {
 
@@ -12,19 +13,19 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
      * Default site loader class name. Used when other site loaders does not match conditions
      * @var string
      */
-    protected $defaultSectionLoaderClass;
+    protected $defaultSiteLoaderClass;
     /**
      * Console site loader class name. Used when other site loaders does not match conditions and console
      * usage is detected (artisan, queue, schedule, etc.)
      * @var string
      */
-    protected $consoleSectionLoaderClass = null;
+    protected $consoleSiteLoaderClass = null;
     /**
      * List of full class names that implement AppSiteLoaderInterface and extend AppSiteLoader
      * Note: no need to add $defaultSection here
      * @var array
      */
-    protected $additionalSectionLoaderClasses = [];
+    protected $additionalSiteLoaderClasses = [];
 
     /**
      * Service provider object that matched required conditions
@@ -32,53 +33,59 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
      */
     static protected $siteLoader;
 
-    /**
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     */
-    public function __construct($app) {
-        // detect site section and make its service provider and import
-        /** @var AppSiteLoaderInterface|AppSiteLoader $className */
-        foreach ($this->additionalSectionLoaderClasses as $className) {
-            if ($className::canBeUsed()) {
-                static::$siteLoader = new $className($this, $app);
-                break;
+    protected function getSiteLoader() {
+        if (!static::$siteLoader) {
+            // detect site section and make its service provider and import
+            /** @var AppSiteLoaderInterface|AppSiteLoader $className */
+            foreach ($this->additionalSiteLoaderClasses as $className) {
+                if ($className::canBeUsed()) {
+                    static::$siteLoader = new $className($this, $app);
+                    break;
+                }
+            }
+            if (static::$siteLoader === null) {
+                if ($this->consoleSiteLoaderClass !== null && $this->app->runningInConsole()) {
+                    $className = $this->consoleSiteLoaderClass;
+                } else {
+                    $className = $this->defaultSiteLoaderClass;
+                }
+                static::$siteLoader = new $className($this, $this->app);
+            }
+            if (!static::$siteLoader) {
+                static::$siteLoader = new DummySiteLoader($this, $this->app);
             }
         }
-        if (static::$siteLoader === null) {
-            if ($this->consoleSectionLoaderClass !== null && \App::runningInConsole()) {
-                $className = $this->consoleSectionLoaderClass;
-            } else {
-                $className = $this->defaultSectionLoaderClass;
-            }
-            static::$siteLoader = new $className($this, $app);
-        }
-        parent::__construct($app);
+        return static::$siteLoader;
     }
 
     public function boot() {
         /** @var AppSiteLoader $className */
-        foreach ($this->additionalSectionLoaderClasses as $className) {
+        foreach ($this->additionalSiteLoaderClasses as $className) {
             $className::loadRoutes();
         }
-        $className = $this->defaultSectionLoaderClass;
-        $className::configureDefaults();
-        if (!in_array($this->defaultSectionLoaderClass, $this->additionalSectionLoaderClasses, true)) {
-            $className::loadRoutes();
+        if ($this->defaultSiteLoaderClass) {
+            $className = $this->defaultSiteLoaderClass;
+            $className::configureDefaults();
+            if (!in_array($this->defaultSiteLoaderClass, $this->additionalSiteLoaderClasses, true)) {
+                $className::loadRoutes();
+            }
         }
         if (method_exists(self::$siteLoader, 'boot')) {
-            static::$siteLoader->boot();
+            $this->getSiteLoader()->boot();
         }
     }
 
     public function register() {
-        if (method_exists(self::$siteLoader, 'register')) {
-            static::$siteLoader->register();
+        $siteLoader = $this->getSiteLoader();
+        if (method_exists($siteLoader, 'register')) {
+            $siteLoader->register();
         }
     }
 
     public function provides() {
-        if (method_exists(self::$siteLoader, 'provides')) {
-            static::$siteLoader->provides();
+        $siteLoader = $this->getSiteLoader();
+        if (method_exists($siteLoader, 'provides')) {
+            $siteLoader->provides();
         }
     }
 
