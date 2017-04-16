@@ -39,7 +39,7 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
             /** @var AppSiteLoaderInterface|AppSiteLoader $className */
             foreach ($this->additionalSiteLoaderClasses as $className) {
                 if ($className::canBeUsed()) {
-                    static::$siteLoader = new $className($this, $app);
+                    static::$siteLoader = new $className($this, $this->app);
                     break;
                 }
             }
@@ -49,7 +49,9 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
                 } else {
                     $className = $this->defaultSiteLoaderClass;
                 }
-                static::$siteLoader = new $className($this, $this->app);
+                if (isset($className)) {
+                    static::$siteLoader = new $className($this, $this->app);
+                }
             }
             if (!static::$siteLoader) {
                 static::$siteLoader = new DummySiteLoader($this, $this->app);
