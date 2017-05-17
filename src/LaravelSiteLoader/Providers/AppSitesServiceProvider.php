@@ -2,6 +2,7 @@
 
 namespace LaravelSiteLoader\Providers;
 
+use Doctrine\Instantiator\Exception\UnexpectedValueException;
 use LaravelSiteLoader\AppSiteLoader;
 use LaravelSiteLoader\AppSiteLoaderInterface;
 use Illuminate\Support\ServiceProvider;
@@ -53,6 +54,11 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
                     static::$siteLoader = new $className($this, $this->app);
                 }
             }
+            if (!(static::$siteLoader instanceof AppSiteLoaderInterface)) {
+                throw new UnexpectedValueException(
+                    'Site loader ' . get_class(static::$siteLoader) . ' must implement ' . AppSiteLoaderInterface::class . ' interface'
+                );
+            }
             if (!static::$siteLoader) {
                 static::$siteLoader = new DummySiteLoader($this, $this->app);
             }
@@ -72,9 +78,7 @@ abstract class AppSitesServiceProvider extends ServiceProvider {
                 $className::loadRoutes();
             }
         }
-        if (method_exists(self::$siteLoader, 'boot')) {
-            $this->getSiteLoader()->boot();
-        }
+        $this->getSiteLoader()->boot();
     }
 
     public function register() {
