@@ -1,15 +1,15 @@
-#What is this?
+# What is this?
 For example: you have a project that contains several very different sites in it. Let's say - it is Frontend, Admin and SuperAdmin sites. 
 All these sites have different resources (views, css, js, images, etc.) but use common DB models, classes, etc. 
 Separating them will be a bad idea and might waste a lot of time. 
 
-##So what if we use Service Providers?
+## So what if we use Service Providers?
 This can be done when you have a simple situation. But if there are some register() and provides() methods you will need to manually
 detect if you need to load them or not, also you will need to do same verification for boot() method. Leaving this methods
 without conditions may be dangerous when you have `$this->app->singleton('\Class\Name', callback)` calls on same `'\Class\Name'` but
 with different `callback`. I've got many issues with it and finally made this classes to solve most of them as easy as possible.
 
-##How to use it:
+## How to use it:
 
 ### 1. Create site loaders     
 For each site in your project create a loader class that extends `\LaravelSiteLoader\AppSiteLoader`. (Or you can use 
@@ -170,7 +170,7 @@ for all loader calsses listed in `$this->sectionLoaderClasses`. The first loader
 
 ### 3. Add your service provider to `config/app.php`
     
-##Notes
+## Notes
 - In your ServiceProvider you can access matching loader via `$this->siteLoader` 
 - If you overwrite `boot()`, `register()` or `provides()` methods in your ServiceProvider - make sure you call 
 `parent::boot()`, `parent::register()` and `parent::provides()` methods within your methods to save loaders functionality
