@@ -24,6 +24,6 @@
     "require": {
         "php": ">=5.5",
         "laravel/framework": ">=5.2",
-        "swayok/utils": "master@dev"
+        "swayok/utils": "~1.0"
     }
 }
